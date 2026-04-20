@@ -1,13 +1,10 @@
 #!/usr/bin/env python3
-"""
-Simple helper function module
-"""
+''' Simple helper function '''
+from typing import Tuple
 
 
-def index_range(page: int, page_size: int) -> tuple:
-    """
-    Return a tuple of size two containing a start index and an end index
-    """
-    start_index = (page - 1) * page_size
-    end_index = start_index + page_size
-    return (start_index, end_index)
+def index_range(page: int, page_size: int) -> Tuple[int, int]:
+    ''' Def index range '''
+    index = page * page_size - page_size
+    index_1 = index + page_size
+    return (index, index_1)

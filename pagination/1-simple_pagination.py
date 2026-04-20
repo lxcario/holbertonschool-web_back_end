@@ -1,19 +1,8 @@
 #!/usr/bin/env python3
-"""
-Simple pagination module
-"""
+''' Simple pagination '''
 import csv
 import math
-from typing import List
-
-
-def index_range(page: int, page_size: int) -> tuple:
-    """
-    Return a tuple of size two containing a start index and an end index
-    """
-    start_index = (page - 1) * page_size
-    end_index = start_index + page_size
-    return (start_index, end_index)
+from typing import List, Tuple
 
 
 class Server:
@@ -36,16 +25,20 @@ class Server:
         return self.__dataset
 
     def get_page(self, page: int = 1, page_size: int = 10) -> List[List]:
-        """
-        Return the appropriate page of the dataset
-        """
-        assert isinstance(page, int) and page > 0
-        assert isinstance(page_size, int) and page_size > 0
-
-        indices = index_range(page, page_size)
-        data = self.dataset()
-
-        try:
-            return data[indices[0]:indices[1]]
-        except IndexError:
+        ''' def get page '''
+        assert type(page_size) is int and type(page) is int
+        assert page > 0
+        assert page_size > 0
+        self.dataset()
+        i = index_range(page, page_size)
+        if i[0] >= len(self.__dataset):
             return []
+        else:
+            return self.__dataset[i[0]:i[1]]
+
+
+def index_range(page: int, page_size: int) -> Tuple[int, int]:
+    ''' De*f index range '''
+    index = page * page_size - page_size
+    index_1 = index + page_size
+    return (index, index_1)

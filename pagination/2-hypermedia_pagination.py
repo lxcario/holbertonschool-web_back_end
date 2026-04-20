@@ -1,8 +1,33 @@
 #!/usr/bin/env python3
-''' Hypermedia pagination '''
+"""Module contains function that returns pagination range
+Imports:
+    Typing: Type annotation module
+    Tuple: Tuple type annotation
+    List: List type anotaton
+    Dict: Dict type annotation
+    csv: csv module
+"""
 import csv
+from typing import List
+from typing import Tuple
+from typing import Dict
 import math
-from typing import Dict, List, Tuple
+
+
+def index_range(page: int, page_size: int) -> Tuple[int, int]:
+    """Function returns pagination range
+
+    Args:
+        page (int): page number
+        page_size (int): page size
+
+    Returns:
+        Tuple[int, int]: start to end range
+    """
+    start = (page - 1) * page_size
+    end = page * page_size
+
+    return ((start, end))
 
 
 class Server:
@@ -25,36 +50,44 @@ class Server:
         return self.__dataset
 
     def get_page(self, page: int = 1, page_size: int = 10) -> List[List]:
-        ''' def get page '''
-        assert type(page_size) is int and type(page) is int
+        """Gets specific data
+        """
         assert page > 0
         assert page_size > 0
-        self.dataset()
-        i = index_range(page, page_size)
-        if i[0] >= len(self.__dataset):
+        assert isinstance(page, int)
+        assert isinstance(page_size, int)
+        myRange = index_range(page, page_size)
+        start = myRange[0]
+        end = myRange[1]
+        csv_list = self.dataset()
+
+        if start >= len(csv_list):
             return []
-        else:
-            return self.__dataset[i[0]:i[1]]
+        return csv_list[start:end]
 
     def get_hyper(self, page: int = 1, page_size: int = 10) -> Dict:
-        ''' Def get hyper '''
-        dataset_items = len(self.dataset())
-        data = self.get_page(page, page_size)
-        total_pages = math.ceil(dataset_items / page_size)
+        """Returns a dictionary containing hypermedia pagination information.
+        """
+        assert page > 0
+        assert page_size > 0
+        assert isinstance(page, int)
+        assert isinstance(page_size, int)
 
-        p = {
+        csv_list = self.dataset()
+        total_items = len(csv_list)
+        total_pages = math.ceil(total_items / page_size)
+
+        start, end = self.index_range(page, page_size)
+        data = csv_list[start:end]
+
+        next_page = page + 1 if page < total_pages else None
+        prev_page = page - 1 if page > 1 else None
+
+        return {
+            "page_size": len(data),
             "page": page,
-            "page_size": page_size if page < total_pages else 0,
             "data": data,
-            "next_page": page + 1 if page + 1 < total_pages else None,
-            "prev_page": page - 1 if page - 1 > 0 else None,
+            "next_page": next_page,
+            "prev_page": prev_page,
             "total_pages": total_pages
-            }
-        return p
-
-
-def index_range(page: int, page_size: int) -> Tuple[int, int]:
-    ''' Def index range '''
-    index = page * page_size - page_size
-    index_1 = index + page_size
-    return (index, index_1)
+        }

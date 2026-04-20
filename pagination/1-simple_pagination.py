@@ -1,8 +1,28 @@
 #!/usr/bin/env python3
-''' Simple pagination '''
+"""Module contains function that returns pagination range
+Imports:
+    Tuple: Tuple type annotation
+    List: List type anotaton
+    csv: csv module
+"""
 import csv
-import math
 from typing import List, Tuple
+
+
+def index_range(page: int, page_size: int) -> Tuple[int, int]:
+    """Function returns pagination range
+
+    Args:
+        page (int): page number
+        page_size (int): page size
+
+    Returns:
+        Tuple[int, int]: start to end range
+    """
+    start = (page - 1) * page_size
+    end = page * page_size
+
+    return ((start, end))
 
 
 class Server:
@@ -25,20 +45,17 @@ class Server:
         return self.__dataset
 
     def get_page(self, page: int = 1, page_size: int = 10) -> List[List]:
-        ''' def get page '''
-        assert type(page_size) is int and type(page) is int
+        """Gets specific data
+        """
         assert page > 0
         assert page_size > 0
-        self.dataset()
-        i = index_range(page, page_size)
-        if i[0] >= len(self.__dataset):
+        assert isinstance(page, int)
+        assert isinstance(page_size, int)
+        myRange = index_range(page, page_size)
+        start = myRange[0]
+        end = myRange[1]
+        filtered_list = self.dataset()
+
+        if start >= len(filtered_list):
             return []
-        else:
-            return self.__dataset[i[0]:i[1]]
-
-
-def index_range(page: int, page_size: int) -> Tuple[int, int]:
-    ''' De*f index range '''
-    index = page * page_size - page_size
-    index_1 = index + page_size
-    return (index, index_1)
+        return filtered_list[start:end]
